@@ -10,7 +10,10 @@ import "./Register.css";
 
 const Register = () => {
   const { enqueueSnackbar } = useSnackbar();
-
+  const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setconfirmPassword] = useState("");
 
   // TODO: CRIO_TASK_MODULE_REGISTER - Implement the register function
   /**
@@ -36,6 +39,32 @@ const Register = () => {
    * }
    */
   const register = async (formData) => {
+    if (validateInput(formData)) {
+      try {
+        setLoading(true);
+        const response = await axios
+          .post(`${config.endpoint}/auth/register`, {
+            username: formData.username,
+            password: formData.password,
+          })
+          .then((response) => {
+            console.log(response);
+            enqueueSnackbar("Successfully Registered");
+            setLoading(false);
+          })
+          .catch((error) => {
+            enqueueSnackbar("Username is already taken");
+            setLoading(false);
+            console.log(error.response);
+          });
+      } catch (e) {
+        if (e.response.status == 400) {
+          setLoading(false);
+
+          enqueueSnackbar("Username is already taken");
+        }
+      }
+    }
   };
 
   // TODO: CRIO_TASK_MODULE_REGISTER - Implement user input validation logic
@@ -57,6 +86,25 @@ const Register = () => {
    * -    Check that confirmPassword field has the same value as password field - Passwords do not match
    */
   const validateInput = (data) => {
+    if (data.username.length === 0) {
+      enqueueSnackbar("Username is a required field");
+      return false;
+    } else if (data.password !== data.confirmPassword) {
+      enqueueSnackbar("Passwords do not match");
+
+      return false;
+    } else if (data.username.length < 6) {
+      enqueueSnackbar("Username must be at least 6 characters");
+      return false;
+    } else if (data.password.length === 0) {
+      enqueueSnackbar("Password is a required field");
+      return false;
+    } else if (data.password.length < 6) {
+      enqueueSnackbar("Password must be at least 6 characters");
+      return false;
+    } else {
+      return true;
+    }
   };
 
   return (
@@ -78,6 +126,10 @@ const Register = () => {
             name="username"
             placeholder="Enter Username"
             fullWidth
+            onChange={(e) => {
+              setUsername(e.target.value);
+              console.log(username);
+            }}
           />
           <TextField
             id="password"
@@ -88,6 +140,7 @@ const Register = () => {
             helperText="Password must be atleast 6 characters length"
             fullWidth
             placeholder="Enter a password with minimum 6 characters"
+            onChange={(e) => setPassword(e.target.value)}
           />
           <TextField
             id="confirmPassword"
@@ -96,15 +149,30 @@ const Register = () => {
             name="confirmPassword"
             type="password"
             fullWidth
+            onChange={(e) => setconfirmPassword(e.target.value)}
           />
-           <Button className="button" variant="contained">
-            Register Now
-           </Button>
+          {!loading && (
+            <Button
+              className="button"
+              variant="contained"
+              onClick={() =>
+                register({
+                  username: username,
+                  password: password,
+                  confirmPassword: confirmPassword,
+                })
+              }
+            >
+              Register Now
+            </Button>
+          )}
+          {loading && <CircularProgress />}
+
           <p className="secondary-action">
             Already have an account?{" "}
-             <a className="link" href="#">
+            <a className="link" href="/">
               Login here
-             </a>
+            </a>
           </p>
         </Stack>
       </Box>
