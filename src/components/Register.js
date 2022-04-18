@@ -58,8 +58,7 @@ const Register = () => {
             console.log(response);
             enqueueSnackbar("Successfully Registered");
             setLoading(false);
-            
-            history.push("/login", { from: "Login" });
+            history.push("/login", { from: "Register" });
           }
 
           }).catch((error) => {
@@ -184,7 +183,7 @@ const Register = () => {
           
           <p className="Secondary_action">
             Already have an account?{" "}
-            <Link role="loginhere"  to ="/login">login here</Link>
+            <Link role="loginHere"  to ="/login">login here</Link>
           </p>
         </Stack>
       </Box>

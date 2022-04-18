@@ -15,7 +15,8 @@ const Login = () =>
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState();
+  const [has,setHas]= useState(false)
+  
   console.log(config.endpoint)
   const history = useHistory();
   // TODO: CRIO_TASK_MODULE_LOGIN - Fetch the API response
@@ -59,17 +60,19 @@ const Login = () =>
             console.log(response);
             enqueueSnackbar("logged in");
             setLoading(false);
-            setUser(response.data)
             console.log (response.data)
             persistLogin (response.data);
+            setHas(true);
             history.push("/", { from: "Login" });
           }
 
           })
           .catch((error) => {
-           if(error.response.status===400){
+           if(error.response.data.success=== false){
+             console.log(error.response)
             enqueueSnackbar("Password is incorrect");
             setLoading(false);
+            
            }
           });
        
@@ -120,7 +123,7 @@ const Login = () =>
    * -    `balance` field in localStorage can be used to store the balance amount in the user's wallet
    */
   
-  const persistLogin = (user,username,token,balance) => {
+  const persistLogin = (user) => {
     
     console.log("username: ",user.username,"token: ",user.token,"Walllet",user.balance)
     localStorage.setItem("username", user.username);
@@ -135,7 +138,7 @@ const Login = () =>
         justifyContent="space-between"
         minHeight="100vh"
       >
-        <Header hasHiddenAuthButtons />
+        <Header hasHiddenAuthButtons={has}/>
         <Box className="content">
         <Stack spacing={2} className="form">
             <h2 className="title">Login</h2>
@@ -189,6 +192,7 @@ const Login = () =>
         <Footer />
       </Box>
   );
+
 };
 
 export default Login;

@@ -22,11 +22,9 @@ const Products = () => {
 
 
 
-
-
   return (
     <div>
-      <Header>
+      <Header >
     
       </Header>
 
