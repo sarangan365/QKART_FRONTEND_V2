@@ -7,6 +7,7 @@ import { config } from "../App";
 import Footer from "./Footer";
 import Header from "./Header";
 import "./Register.css";
+import { useHistory, Link } from "react-router-dom";
 
 const Register = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -14,6 +15,10 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setconfirmPassword] = useState("");
+  const history = useHistory();
+
+  
+  
 
   // TODO: CRIO_TASK_MODULE_REGISTER - Implement the register function
   /**
@@ -40,30 +45,39 @@ const Register = () => {
    */
   const register = async (formData) => {
     if (validateInput(formData)) {
-      try {
+      try{
         setLoading(true);
-        const response = await axios
-          .post(`${config.endpoint}/auth/register`, {
+        axios
+          .post(`${config.endpoint}/auth/register`,{
             username: formData.username,
             password: formData.password,
           })
           .then((response) => {
+            console.log(response.status);
+            if(response.status === 201){
             console.log(response);
             enqueueSnackbar("Successfully Registered");
             setLoading(false);
-          })
-          .catch((error) => {
+            
+            history.push("/login", { from: "Login" });
+          }
+
+          }).catch((error) => {
+            if(error.response.status===400){
+             enqueueSnackbar("Username is already taken");
+             setLoading(false);
+            }
+           });
+      }
+          catch(err){
+           if(err.response.status === 400){
             enqueueSnackbar("Username is already taken");
             setLoading(false);
-            console.log(error.response);
-          });
-      } catch (e) {
-        if (e.response.status == 400) {
-          setLoading(false);
-
-          enqueueSnackbar("Username is already taken");
-        }
-      }
+            alert("Username is already taken",err.response.message);
+           }else if(err.response.status >=401){
+             alert("Username is already taken",err.response.message)
+           }
+          }
     }
   };
 
@@ -167,12 +181,10 @@ const Register = () => {
             </Button>
           )}
           {loading && <CircularProgress />}
-
-          <p className="secondary-action">
+          
+          <p className="Secondary_action">
             Already have an account?{" "}
-            <a className="link" href="/">
-              Login here
-            </a>
+            <Link  to ="/login">login here</Link>
           </p>
         </Stack>
       </Box>
