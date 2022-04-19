@@ -7,7 +7,7 @@ import { config } from "../App";
 import Footer from "./Footer";
 import Header from "./Header";
 import "./Register.css";
-import { useHistory, Link } from "react-router-dom";
+import {Link} from 'react-router-dom';
 
 const Register = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -15,10 +15,6 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setconfirmPassword] = useState("");
-  const history = useHistory();
-
-  
-  
 
   // TODO: CRIO_TASK_MODULE_REGISTER - Implement the register function
   /**
@@ -46,37 +42,39 @@ const Register = () => {
   const register = async (formData) => {
     if (validateInput(formData)) {
       try{
-        setLoading(true);
-        axios
-          .post(`${config.endpoint}/auth/register`,{
-            username: formData.username,
-            password: formData.password,
-          })
-          .then((response) => {
-            console.log(response.status);
-            if(response.status === 201){
-            console.log(response);
-            enqueueSnackbar("Successfully Registered");
-            setLoading(false);
-            history.push("/login", { from: "Register" });
-          }
+      setLoading(true);
+        await axios.post(`${config.endpoint}/auth/register`, {
+        username: formData.username,
+        password: formData.password,
+      });
+        
+    //   if (res && res.data && res.data.success === true) {
+    //     setLoading(false);
 
-          }).catch((error) => {
-            if(error.response.status===400){
-             enqueueSnackbar("Username is already taken");
-             setLoading(false);
-            }
-           });
+    //     if (res.data.success === true) {
+    //       enqueueSnackbar("Successfully Registered");
+    //     } else if (res.data.success === false) {
+    //       enqueueSnackbar(res.data);
+    //     }
+    //   } else {
+    //     enqueueSnackbar(res.data.message);
+    //     setLoading(false);
+    //   }
+    // }
+    enqueueSnackbar("Successfully Registered");
+    setLoading(false);
       }
-          catch(err){
-           if(err.response.status === 400){
-            enqueueSnackbar("Username is already taken");
-            setLoading(false);
-            alert("Username is already taken",err.response.message);
-           }else if(err.response.status >=401){
-             alert("Username is already taken",err.response.message)
-           }
-          }
+    catch(e)
+    {
+      if( e.response && e.response.status)
+      {
+       setLoading(false); 
+       enqueueSnackbar("Username is already taken");
+        //console.log("inside catch",e.response.status);
+
+      }
+     // enqueueSnackbar(e)
+    }
     }
   };
 
@@ -102,11 +100,13 @@ const Register = () => {
     if (data.username.length === 0) {
       enqueueSnackbar("Username is a required field");
       return false;
-    } else if (data.password !== data.confirmPassword) {
+    }
+    
+     else if (data.password !== data.confirmPassword) {
       enqueueSnackbar("Passwords do not match");
-
       return false;
-    } else if (data.username.length < 6) {
+     }
+      else if ( data.username.length>=1 && data.username.length < 6) {
       enqueueSnackbar("Username must be at least 6 characters");
       return false;
     } else if (data.password.length === 0) {
@@ -127,7 +127,8 @@ const Register = () => {
       justifyContent="space-between"
       minHeight="100vh"
     >
-      <Header hasHiddenAuthButtons />
+      <Header false />
+      
       <Box className="content">
         <Stack spacing={2} className="form">
           <h2 className="title">Register</h2>
@@ -165,7 +166,9 @@ const Register = () => {
             onChange={(e) => setconfirmPassword(e.target.value)}
           />
           {!loading && (
-            <Button
+            <div>
+            <Link to="/login">
+              <Button
               className="button"
               variant="contained"
               onClick={() =>
@@ -177,13 +180,17 @@ const Register = () => {
               }
             >
               Register Now
-            </Button>
+              </Button>
+            </Link>
+            </div>
           )}
           {loading && <CircularProgress />}
-          
-          <p className="Secondary_action">
+
+          <p className="secondary-action">
             Already have an account?{" "}
-            <Link role="loginHere"  to ="/login">login here</Link>
+            <Link className="link" to="/login">
+              Login here
+            </Link>
           </p>
         </Stack>
       </Box>

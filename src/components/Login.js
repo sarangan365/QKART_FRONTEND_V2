@@ -9,16 +9,14 @@ import Footer from "./Footer";
 import Header from "./Header";
 import "./Login.css";
 
-const Login = () => 
-{
+const Login = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const [loading, setLoading] = useState(false);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [has,setHas]= useState(false)
-  
-  console.log(config.endpoint)
-  const history = useHistory();
+  const [username,setusername] = useState("");
+  const [password, setpassword] = useState("");
+  const { history } = useHistory();
+  const [ loading, setloading] = useState(false)
+  //const [balance,setbalance] = useState(0);
+  //const [ token ,settoken] = useState();
   // TODO: CRIO_TASK_MODULE_LOGIN - Fetch the API response
   /**
    * Perform the Login API call
@@ -44,38 +42,32 @@ const Login = () =>
    * }
    *
    */
-  const login = async (formData) => 
-  {
-    if (validateInput(formData)) 
+  const login = async (formData) => {
+    if( validateInput(formData))
     {
-     
-        setLoading(true);
-        axios
-          .post(`${config.endpoint}/auth/login`,{
-            username: formData.username,
-            password: formData.password,
-          })
-          .then((response) => {
-            if(response.status===201){
-            console.log(response);
-            enqueueSnackbar("logged in");
-            setLoading(false);
-            console.log (response.data)
-            persistLogin (response.data);
-            setHas(true);
-            history.push("/", { from: "Login" });
-          }
-
-          })
-          .catch((error) => {
-           if(error.response.data.success=== false){
-             console.log(error.response)
-            enqueueSnackbar("Password is incorrect");
-            setLoading(false);
-            
-           }
-          });
-       
+      try{
+        setloading(true);
+      let res = await axios.post(`${config.endpoint}/auth/login`,{username:formData.username,password:formData.password})
+      .then((response)=>{
+        console.log( response.data)
+        setloading(false);
+        persistLogin(response.data.token,response.data.username,response.data.balance);
+        enqueueSnackbar("Logged In");
+      })
+      .catch((error)=>{
+        
+        enqueueSnackbar(error.response.data.message)
+        console.log( "error ="+error.response.data.message)
+        setloading(false);
+      })
+      }
+      catch( error)
+      {
+        console.log( error.response.data.message);
+        enqueueSnackbar("Something went wrong. Check that the backend is running, reachable and returns valid JSON.");
+        setloading(false)
+        //enqueueSnackbar(error.response.message);
+      }
     }
   };
 
@@ -95,15 +87,18 @@ const Login = () =>
    * -    Check that password field is not an empty value - "Password is a required field"
    */
   const validateInput = (data) => {
-    if (data.username.length === 0) {
+    if( data.username.length === 0)
+    {
       enqueueSnackbar("Username is a required field");
       return false;
-    } else if (data.password.length === 0) {
+    }
+    else if( data.password.length === 0)
+    {
       enqueueSnackbar("Password is a required field");
       return false;
-    }  else {
-      return true;
     }
+    else
+      return true;
   };
 
   // TODO: CRIO_TASK_MODULE_LOGIN - Persist user's login information
@@ -122,77 +117,70 @@ const Login = () =>
    * -    `username` field in localStorage can be used to store the username that the user is logged in as
    * -    `balance` field in localStorage can be used to store the balance amount in the user's wallet
    */
-  
-  const persistLogin = (user) => {
-    
-    console.log("username: ",user.username,"token: ",user.token,"Walllet",user.balance)
-    localStorage.setItem("username", user.username);
-    localStorage.setItem("token",user.token);
-    localStorage.setItem("balance",user.balance);
+  const persistLogin = (token, username, balance) => {
+    localStorage.setItem('username',username);
+    localStorage.setItem('token',token);
+    localStorage.setItem('balance',balance);
+    // settoken(token);
+    // setusername(username);
+    // setbalance(balance);
   };
 
   return (
-      <Box
-        display="flex"
-        flexDirection="column"
-        justifyContent="space-between"
-        minHeight="100vh"
-      >
-        <Header hasHiddenAuthButtons={has}/>
-        <Box className="content">
+    <Box
+      display="flex"
+      flexDirection="column"
+      justifyContent="space-between"
+      minHeight="100vh"
+    >
+      <Header false />
+      <Box className="content">
         <Stack spacing={2} className="form">
-            <h2 className="title">Login</h2>
-            <TextField
-              id="username"
-              label="Username"
-              variant="outlined"
-              title="Username"
-              name="username"
-              placeholder="Enter Username"
-              fullWidth
-              onChange={(e) => {
-                setUsername(e.target.value);
-                console.log(username);
-                
-              }}
-            />
-            <TextField
-              id="password"
-              variant="outlined"
-              label="Password"
-              name="password"
-              type="password"
-              helperText="Please Enter the password"
-              fullWidth
-              placeholder="Enter a password with minimum 6 characters"
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            {!loading && (
-              <Button
-                className="button"
-                variant="contained"
-                onClick={() =>
-                  login({
-                    username: username,
-                    password: password,
-                  })
-                }
-              >
-               LOGIN TO QKART
-              </Button>
-            )}
-            {loading && <CircularProgress />}
-
+        <h2 className="title">Login</h2>
+        <TextField
+            id="username"
+            label="Username"
+            variant="outlined"
+            title="Username"
+            name="username"
+            placeholder="Enter Username"
+            fullWidth
+            onChange={(e)=>setusername(e.target.value)}
+            
+          />
+          <TextField
+            id="password"
+            variant="outlined"
+            label="Password"
+            name="password"
+            type="password"
+            helperText="Password must be atleast 6 characters length"
+            fullWidth
+            placeholder="Enter a password with minimum 6 characters"
+             onChange={(e) => setpassword(e.target.value)}
+          />
+          {!loading && <Button
+              className="button"
+              variant="contained"
+              onClick={()=>login({username:username,password:password})}
+            >
+              LOGIN TO QKART
+            </Button>
+            }
+            {
+              loading && <CircularProgress/>
+            }
             <p className="secondary-action">
-              Dont Have an account{" "}
-              <Link to="/register">register now</Link>
-            </p>
-          </Stack>
-        </Box>
-        <Footer />
+            Don't have an account?{" "}
+            <Link  to="/register">
+              Register now
+            </Link>
+          </p>
+        </Stack>
       </Box>
+      <Footer />
+    </Box>
   );
-
 };
 
 export default Login;
