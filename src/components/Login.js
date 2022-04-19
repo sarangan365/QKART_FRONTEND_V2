@@ -15,6 +15,7 @@ const Login = () => {
   const [password, setpassword] = useState("");
   const { history } = useHistory();
   const [ loading, setloading] = useState(false)
+  const hist= useHistory();
   //const [balance,setbalance] = useState(0);
   //const [ token ,settoken] = useState();
   // TODO: CRIO_TASK_MODULE_LOGIN - Fetch the API response
@@ -53,6 +54,7 @@ const Login = () => {
         setloading(false);
         persistLogin(response.data.token,response.data.username,response.data.balance);
         enqueueSnackbar("Logged In");
+        hist.push("/",{from:"login"});
       })
       .catch((error)=>{
         

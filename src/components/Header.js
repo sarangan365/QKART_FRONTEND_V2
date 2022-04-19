@@ -46,7 +46,12 @@ const Header = ({ children, hasHiddenAuthButtons }) => {
         {
           hasHiddenAuthButtons &&  localStorage.getItem('username') && 
           <div>
-            
+            <Stack
+  direction="row"
+  justifyContent="flex-end"
+  alignItems="center"
+  spacing={2}
+>
             <Avatar alt={username} username={username} src="avatar.png" />
         <p>{username}</p>
         <Link to="/">
@@ -58,11 +63,19 @@ const Header = ({ children, hasHiddenAuthButtons }) => {
         </Button> 
 
         </Link>
+        </Stack>
+
             </div>
         }
         {
           hasHiddenAuthButtons && !localStorage.getItem('username') &&
             <div>
+              <Stack
+ direction="row"
+ justifyContent="flex-end"
+ alignItems="center"
+ spacing={4}
+>
             <Link to="/register">
             <Button className="button" variant="contained" onClick={()=>{history.push("/register")}}>REGISTER</Button>
             </Link>
@@ -70,6 +83,7 @@ const Header = ({ children, hasHiddenAuthButtons }) => {
             <Link to="/login">
             <Button className="button" variant="contained" onClick={()=>{ history.push("/login")}}>LOGIN</Button>
             </Link>
+            </Stack>
             </div>
            
         }
