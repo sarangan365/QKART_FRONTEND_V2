@@ -13,7 +13,7 @@ import { config } from "../App";
 import Footer from "./Footer";
 import Header from "./Header";
 import "./Products.css";
-
+import ProductCard from "./ProductCard"
 // Definition of Data Structures used
 /**
  * @typedef {Object} Product - Data on product available to buy
@@ -26,6 +26,17 @@ import "./Products.css";
  * @property {string} _id - Unique ID for the product
  */
 
+// try
+
+
+let product={
+  "name":"Tan Leatherette Weekender Duffle",
+  "category":"Fashion",
+  "cost":150,
+  "rating":4,
+  "image":"https://crio-directus-assets.s3.ap-south-1.amazonaws.com/ff071a1c-1099-48f9-9b03-f858ccc53832.png",
+  "_id":"PmInA797xJhMIPti"
+  }
 
 const Products = () => {
 
@@ -67,6 +78,7 @@ const Products = () => {
    * }
    */
   const performAPICall = async () => {
+
   };
 
   // TODO: CRIO_TASK_MODULE_PRODUCTS - Implement search logic
@@ -109,12 +121,12 @@ const Products = () => {
 
   return (
     <div>
-      <Header>
+      <Header hasHiddenAuthButtons>
         {/* TODO: CRIO_TASK_MODULE_PRODUCTS - Display search bar in the header for Products page */}
 
       </Header>
-
-      {/* Search view for mobiles */}
+    
+      {/* search-mobile */}
       <TextField
         className="search-mobile"
         size="small"
@@ -129,8 +141,23 @@ const Products = () => {
         placeholder="Search for items/categories"
         name="search"
       />
+      <TextField
+        className="search-desktop"
+        size="large"
+        fullWidth
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <Search color="primary" />
+            </InputAdornment>
+          ),
+        }}
+        placeholder="Search for items/categories"
+        name="search"
+      />
        <Grid container>
          <Grid item className="product-grid">
+       
            <Box className="hero">
              <p className="hero-heading">
                India’s <span className="hero-highlight">FASTEST DELIVERY</span>{" "}
@@ -138,6 +165,7 @@ const Products = () => {
              </p>
            </Box>
          </Grid>
+         <ProductCard product={product}/>
        </Grid>
       <Footer />
     </div>

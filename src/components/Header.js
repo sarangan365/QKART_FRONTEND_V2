@@ -77,11 +77,11 @@ const Header = ({ children, hasHiddenAuthButtons }) => {
  spacing={4}
 >
             <Link to="/register">
-            <Button className="button" variant="contained" onClick={()=>{history.push("/register")}}>REGISTER</Button>
+            <Button size="small" className="button" variant="contained" onClick={()=>{history.push("/register")}}>REGISTER</Button>
             </Link>
             
             <Link to="/login">
-            <Button className="button" variant="contained" onClick={()=>{ history.push("/login")}}>LOGIN</Button>
+            <Button size="small" className="button" variant="contained" onClick={()=>{ history.push("/login")}}>LOGIN</Button>
             </Link>
             </Stack>
             </div>
