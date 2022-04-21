@@ -15,31 +15,37 @@ const ProductCard = ({ product, handleAddToCart }) => {
   return (
     <Card className="card">
       <CardMedia
+        sx={{ objectFit: "cover" }}
         component="img"
-        
+        height="200"
         image={product.image}
-        alt="green iguana"
+        alt={product.name}
       />
-      <Typography gutterBottom variant="h6" component="div">
+      <CardContent>
+        <Typography className="card-name" variant="body.text" component="div">
           {product.name}
-      </Typography>
-      <Typography gutterBottom variant="h6" component="div">
+        </Typography>
+        <Typography className="card-cost" variant="h6">
           ${product.cost}
-      </Typography>
+        </Typography>
         <Rating
-        name="read-only"
-        value={product.rating} readOnly />
-        <CardActions>
+          name="read-only"
+          value={product.rating}
+          precision={0.5}
+          readOnly
+        />
+      </CardContent>
+      <CardActions>
         <Button
-              className="button"
-              variant="contained"
-              fullWidth
-            >
-              ADD TO CART
-              </Button>
+          className="card-button"
+          size="small"
+          variant="contained"
+          startIcon={<AddShoppingCartOutlined />}
+          onClick={handleAddToCart}
+        >
+          ADD TO CART
+        </Button>
       </CardActions>
-        
-
     </Card>
   );
 };

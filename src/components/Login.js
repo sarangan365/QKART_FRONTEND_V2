@@ -10,14 +10,14 @@ import Header from "./Header";
 import "./Login.css";
 
 const Login = () => {
+  const history = useHistory();
   const { enqueueSnackbar } = useSnackbar();
-  const [username,setusername] = useState("");
-  const [password, setpassword] = useState("");
-  const { history } = useHistory();
-  const [ loading, setloading] = useState(false)
-  const hist= useHistory();
-  //const [balance,setbalance] = useState(0);
-  //const [ token ,settoken] = useState();
+  const [isAPICalling, setAPIStatus] = useState(false);
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+  });
+
   // TODO: CRIO_TASK_MODULE_LOGIN - Fetch the API response
   /**
    * Perform the Login API call
@@ -44,32 +44,40 @@ const Login = () => {
    *
    */
   const login = async (formData) => {
-    if( validateInput(formData))
-    {
-      try{
-        setloading(true);
-      let res = await axios.post(`${config.endpoint}/auth/login`,{username:formData.username,password:formData.password})
-      .then((response)=>{
-        console.log( response.data)
-        setloading(false);
-        persistLogin(response.data.token,response.data.username,response.data.balance);
-        enqueueSnackbar("Logged In");
-        hist.push("/",{from:"login"});
-      })
-      .catch((error)=>{
-        
-        enqueueSnackbar(error.response.data.message)
-        console.log( "error ="+error.response.data.message)
-        setloading(false);
-      })
-      }
-      catch( error)
-      {
-        console.log( error.response.data.message);
-        enqueueSnackbar("Something went wrong. Check that the backend is running, reachable and returns valid JSON.");
-        setloading(false)
-        //enqueueSnackbar(error.response.message);
-      }
+    if (validateInput(formData)) {
+      setAPIStatus(true);
+      axios
+        .post(`${config.endpoint}/auth/login`, formData)
+        .then((res) => {
+          setAPIStatus(false);
+          if (res.status === 201) {
+            // Displaying a success banner with text, “Logged in successfully” if login is successful (201 status code)
+            enqueueSnackbar("Logged in successfully", {
+              variant: "success",
+            });
+            persistLogin(res.data.token, formData.username, res.data.balance);
+            history.push("/");
+          }
+        })
+        .catch((err) => {
+          setAPIStatus(false);
+          if (err.response) {
+            if (err.response.status >= 400 && err.response.status < 500) {
+              // Show Error Message coming from Backend
+              enqueueSnackbar(err.response.data.message, {
+                variant: "error",
+              });
+            }
+          } else {
+            // Show Something Went Wrong Message
+            enqueueSnackbar(
+              "Something went wrong. Check that the backend is running, reachable and returns valid JSON.",
+              {
+                variant: "warning",
+              }
+            );
+          }
+        });
     }
   };
 
@@ -89,18 +97,18 @@ const Login = () => {
    * -    Check that password field is not an empty value - "Password is a required field"
    */
   const validateInput = (data) => {
-    if( data.username.length === 0)
-    {
-      enqueueSnackbar("Username is a required field");
+    if (data.username === "") {
+      enqueueSnackbar("Username is a required field", {
+        variant: "error",
+      });
+      return false;
+    } else if (data.password === "") {
+      enqueueSnackbar("Password is a required field", {
+        variant: "error",
+      });
       return false;
     }
-    else if( data.password.length === 0)
-    {
-      enqueueSnackbar("Password is a required field");
-      return false;
-    }
-    else
-      return true;
+    return true;
   };
 
   // TODO: CRIO_TASK_MODULE_LOGIN - Persist user's login information
@@ -120,12 +128,17 @@ const Login = () => {
    * -    `balance` field in localStorage can be used to store the balance amount in the user's wallet
    */
   const persistLogin = (token, username, balance) => {
-    localStorage.setItem('username',username);
-    localStorage.setItem('token',token);
-    localStorage.setItem('balance',balance);
-    // settoken(token);
-    // setusername(username);
-    // setbalance(balance);
+    localStorage.setItem("token", token);
+    localStorage.setItem("username", username);
+    localStorage.setItem("balance", balance);
+  };
+
+  const handleChange = (event) => {
+    if (event.target.name === "username") {
+      setFormData({ ...formData, username: event.target.value });
+    } else if (event.target.name === "password") {
+      setFormData({ ...formData, password: event.target.value });
+    }
   };
 
   return (
@@ -135,46 +148,49 @@ const Login = () => {
       justifyContent="space-between"
       minHeight="100vh"
     >
-      <Header false />
+      <Header hasHiddenAuthButtons={true} />
       <Box className="content">
         <Stack spacing={2} className="form">
-        <h2 className="title">Login</h2>
-        <TextField
+          <h2 className="title">Login</h2>
+          <TextField
             id="username"
             label="Username"
             variant="outlined"
             title="Username"
             name="username"
+            value={formData.username}
+            onChange={handleChange}
             placeholder="Enter Username"
             fullWidth
-            onChange={(e)=>setusername(e.target.value)}
-            
           />
           <TextField
             id="password"
-            variant="outlined"
             label="Password"
+            variant="outlined"
             name="password"
             type="password"
-            helperText="Password must be atleast 6 characters length"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
             fullWidth
-            placeholder="Enter a password with minimum 6 characters"
-             onChange={(e) => setpassword(e.target.value)}
           />
-          {!loading && <Button
+          {isAPICalling ? (
+            <Box sx={{ display: "flex", justifyContent: "center" }}>
+              <CircularProgress size={38} />
+            </Box>
+          ) : (
+            <Button
+              onClick={() => login(formData)}
               className="button"
               variant="contained"
-              onClick={()=>login({username:username,password:password})}
             >
               LOGIN TO QKART
             </Button>
-            }
-            {
-              loading && <CircularProgress/>
-            }
-            <p className="secondary-action">
+          )}
+
+          <p className="secondary-action">
             Don't have an account?{" "}
-            <Link  to="/register">
+            <Link className="link" to="/register">
               Register now
             </Link>
           </p>
