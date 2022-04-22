@@ -5,9 +5,9 @@ import Login from "./components/Login";
 import Products from "./components/Products";
 import Checkout from "./components/Checkout";
 import Thanks from "./components/Thanks";
-
+import ipConfig from "./ipConfig.json"
 export const config = {
-  endpoint: `https://43.204.81.73:8081/api/v1`,
+  endpoint: `https://qkartfrontend365.herokuapp.com/api/V1`,
 };
 
 function App() {
