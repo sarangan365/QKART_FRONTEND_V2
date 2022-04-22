@@ -447,7 +447,7 @@ const Checkout = () => {
   const performCheckout = async (token, items, addresses) => {
     if (validateRequest(items, addresses)) {
       try {
-        const response = await axios.post(
+         await axios.post(
           `${config.endpoint}/cart/checkout`,
           { addressId: addresses.selected },
           {

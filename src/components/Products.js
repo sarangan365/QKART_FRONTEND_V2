@@ -415,6 +415,7 @@ const Products = () => {
         value={searchValue}
         onChange={(event) => debounceSearch(event, timerID)}
       />
+      
       {localStorage.getItem("username") && localStorage.getItem("token") ? (
         <Grid container>
           <Grid item className="product-grid" sm={12} md={9}>
