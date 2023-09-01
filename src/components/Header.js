@@ -2,22 +2,39 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {
   Button,
   Grid,
+  IconButton,
+  Popover,
   Stack,
-  Typography
+  Typography,
 } from "@mui/material";
 import Box from "@mui/material/Box";
-import React from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import "./Header.css";
+// eslint-disable-next-line
+import { Logout, Person } from "@mui/icons-material";
 
 const Header = ({ children, hasHiddenAuthButtons }) => {
   const history = useHistory();
-// by clearing the local storage then no token and user name will be found then u should go to reg or login
+  // by clearing the local storage then no token and user name will be found then u should go to reg or login
   const handleLogOut = () => {
     localStorage.clear();
     //upon reloading page will be refresh to show login or register
     window.location.reload();
   };
+
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleClickAvatar = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClosePopup = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
 
   return (
     <Box className="header">
@@ -43,46 +60,62 @@ const Header = ({ children, hasHiddenAuthButtons }) => {
             {localStorage.getItem("username") &&
             localStorage.getItem("token") ? (
               <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginRight: "5px",
-                    marginBottom: "1px",
-                  }}
-                >
+                <IconButton onClick={handleClickAvatar} sx={{ padding: 0 }}>
                   <img
                     style={{
-                      height: "30px",
-                      marginTop: "15px",
+                      height: "80%",
                       marginRight: "10px",
+                      cursor: "pointer",
                     }}
                     src="avatar.png"
                     alt={localStorage.getItem("username")}
-                  ></img>
-                  <Typography sx={{maxWidth: "8rem"}} my="1rem">{localStorage.getItem("username").split(" ")[0]}</Typography>
-                </Box>
-                <Button variant="text" onClick={() => handleLogOut()}>
-                  LOGOUT
-                </Button>
+                  />
+                </IconButton>
+                <Popover
+                  id={id}
+                  open={open}
+                  anchorEl={anchorEl}
+                  onClose={handleClosePopup}
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "center",
+                  }}
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "center",
+                  }}
+                >
+                  <Box sx={{ padding: "1rem" }}>
+                    <Typography sx={{ marginBottom: "0.5rem" }}>
+                      {localStorage.getItem("username").split(" ")[0]}
+                    </Typography>
+                    <Button
+                      variant="text"
+                      onClick={() => {
+                        handleClosePopup();
+                        handleLogOut();
+                      }}
+                      startIcon={<Logout />}
+                    >
+                      Logout
+                    </Button>
+                  </Box>
+                </Popover>
               </Box>
             ) : (
               <Grid item>
-                    <Stack direction="row" spacing={1}>
-                      <Button
-                        variant="text"
-                        onClick={() => history.push("/login")}
-                      >
-                        LOGIN
-                      </Button>
-                      <Button
-                        variant="contained"
-                        onClick={() => history.push("/register")}
-                      >
-                        REGISTER
-                      </Button>
-                    </Stack>
-                  </Grid>
+                <Stack direction="row" spacing={1}>
+                  <Button variant="text" onClick={() => history.push("/login")}>
+                    LOGIN
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={() => history.push("/register")}
+                  >
+                    REGISTER
+                  </Button>
+                </Stack>
+              </Grid>
             )}
           </Box>
         )}

@@ -5,6 +5,7 @@ import Login from "./components/Login";
 import Products from "./components/Products";
 import Checkout from "./components/Checkout";
 import Thanks from "./components/Thanks";
+// eslint-disable-next-line
 import ipConfig from "./ipConfig.json"
 export const config = {
   endpoint: `https://qkart-frontend-backends.onrender.com/api/V1`,

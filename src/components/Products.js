@@ -363,7 +363,7 @@ const Products = () => {
           </p>
         </Box>
         {isProductAPICalling ? (
-          <Box className="loader">
+          <Box className="loader" sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
             <CircularProgress size={38} />
             <p>Loading Products…</p>
           </Box>
@@ -374,26 +374,26 @@ const Products = () => {
           </Box>
         ) : (
           <Box sx={{ mr: "10px", ml: "10px", mt: 2, mb: 2 }}>
-            <Grid container spacing={2}>
-              {productsArray.map((product) => (
-                <Grid item xs={12} sm={6} md={4} key={product._id}>
-                  <ProductCard
-                    product={product}
-                    handleAddToCart={() =>
-                      addToCart(
-                        localStorage.getItem("token"),
-                        productsInCart,
-                        productsArray,
-                        product._id,
-                        1,
-                        true
-                      )
-                    }
-                  />
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
+      <Grid container spacing={2}>
+        {productsArray.map((product) => (
+          <Grid item xs={12} sm={6} md={4} key={product._id}>
+            <ProductCard
+              product={product}
+              handleAddToCart={() =>
+                addToCart(
+                  localStorage.getItem("token"),
+                  productsInCart,
+                  productsArray,
+                  product._id,
+                  1,
+                  true
+                )
+              }
+            />
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
         )}
       </>
     );
@@ -446,13 +446,13 @@ const Products = () => {
         onChange={(event) => debounceSearch(event, timerID)}
       /> */}
         <IconButton
-          className="search-mobile"
+        className="search-mobile"
           onClick={handleSearchIconClick}
           sx={{
             color: "primary",
           }}
         >
-          <Search />
+          <Search color="primary" />
         </IconButton>
         <Popover
           className="search-mobile"
@@ -469,7 +469,7 @@ const Products = () => {
           }}
           PaperProps={{
             sx: {
-              width: "100vw", // Set full-screen width
+              width: "90vw",   // Set full-screen width
               paddingLeft: "10px",
               paddingRight: "10px",
             },
