@@ -376,7 +376,7 @@ const Products = () => {
           <Box sx={{ mr: "10px", ml: "10px", mt: 2, mb: 2 }}>
             <Grid container spacing={2}>
               {productsArray.map((product) => (
-                <Grid item xs={6} md={4} lg={3} key={product._id}>
+                <Grid item xs={12} sm={6} md={4} key={product._id}>
                   <ProductCard
                     product={product}
                     handleAddToCart={() =>
@@ -446,7 +446,7 @@ const Products = () => {
         onChange={(event) => debounceSearch(event, timerID)}
       /> */}
         <IconButton
-        className="search-mobile"
+          className="search-mobile"
           onClick={handleSearchIconClick}
           sx={{
             color: "primary",
@@ -469,7 +469,7 @@ const Products = () => {
           }}
           PaperProps={{
             sx: {
-              width: "100vw",   // Set full-screen width
+              width: "100vw", // Set full-screen width
               paddingLeft: "10px",
               paddingRight: "10px",
             },
