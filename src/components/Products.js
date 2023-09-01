@@ -2,7 +2,9 @@ import { Search, SentimentDissatisfied } from "@mui/icons-material";
 import {
   CircularProgress,
   Grid,
+  IconButton,
   InputAdornment,
+  Popover,
   TextField,
 } from "@mui/material";
 import { Box } from "@mui/system";
@@ -38,9 +40,9 @@ const Products = () => {
 
   const [productsInCart, setProductsInCart] = useState([]);
 
-  // Set the Status to True if API is calling - We use this state to show Loader on Screen
+  // Set the Status to True if API is calling - to show loading circular progress
   const [isProductAPICalling, setAPIStatusForProduct] = useState(true);
-
+  // Same
   const [isCartAPICalling, setAPIStatusForCart] = useState(true);
 
   // It will store the Value entered by user on Input Search Box
@@ -51,6 +53,19 @@ const Products = () => {
 
   // Will set the Timer and Prevents API call till the timer
   const [timerID, setTimer] = useState(null);
+
+  // for search icon on mobile ui
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleSearchIconClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClosePopup = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
 
   useEffect(() => {
     performAPICall();
@@ -95,6 +110,9 @@ const Products = () => {
    *      "message": "Something went wrong. Check the backend console for more details"
    * }
    */
+
+  // to display 12 product at initial we need to do this api call
+
   const performAPICall = async () => {
     try {
       let url = `${config.endpoint}/products`;
@@ -125,6 +143,7 @@ const Products = () => {
    * API endpoint - "GET /products/search?value=<search-query>"
    *
    */
+  // to
   const performSearch = async (text) => {
     try {
       let url = `${config.endpoint}/products/search?value=${text}`;
@@ -157,6 +176,8 @@ const Products = () => {
    *    Timer id set for the previous debounce call
    *
    */
+
+  // debounce search to
   const debounceSearch = (event, debounceTimeout) => {
     setSearchValue(event.target.value);
     setAPIStatusForProduct(true);
@@ -304,7 +325,9 @@ const Products = () => {
         postCallForCartAPI(token, productId, qty);
       }
     } else {
-      enqueueSnackbar("Please login to add the products in Cart.", { variant: "error" });
+      enqueueSnackbar("Please login to add the products in Cart.", {
+        variant: "error",
+      });
       history.push("/login");
     }
   };
@@ -384,6 +407,10 @@ const Products = () => {
           className="search-desktop"
           size="small"
           fullWidth
+          sx={{
+            paddingLeft: "10px", // Add left padding
+            paddingRight: "10px", // Add right padding
+          }}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -396,13 +423,16 @@ const Products = () => {
           value={searchValue}
           onChange={(event) => debounceSearch(event, timerID)}
         />
-      </Header>
 
-      {/* Search view for mobiles */}
-      <TextField
+        {/* Search view for mobiles */}
+        {/* <TextField
         className="search-mobile"
         size="small"
-        fullWidth
+        fullWidth 
+        sx={{
+          paddingLeft: "10px",  // Add left padding
+          paddingRight: "10px", // Add right padding
+        }}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
@@ -414,8 +444,51 @@ const Products = () => {
         name="search"
         value={searchValue}
         onChange={(event) => debounceSearch(event, timerID)}
-      />
-      
+      /> */}
+        <IconButton
+        className="search-mobile"
+          onClick={handleSearchIconClick}
+          sx={{
+            color: "primary",
+          }}
+        >
+          <Search />
+        </IconButton>
+        <Popover
+          className="search-mobile"
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handleClosePopup}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "center",
+          }}
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "center",
+          }}
+          PaperProps={{
+            sx: {
+              width: "100vw",   // Set full-screen width
+              paddingLeft: "10px",
+              paddingRight: "10px",
+            },
+          }}
+        >
+          <Box sx={{ padding: "10px" }}>
+            {" "}
+            {/* Adding padding around the TextField */}
+            <TextField
+              size="small"
+              fullWidth
+              placeholder="Search for items/categories"
+              name="search"
+              value={searchValue}
+              onChange={(event) => debounceSearch(event, timerID)}
+            />
+          </Box>
+        </Popover>
+      </Header>
       {localStorage.getItem("username") && localStorage.getItem("token") ? (
         <Grid container>
           <Grid item className="product-grid" sm={12} md={9}>

@@ -7,7 +7,7 @@ import Checkout from "./components/Checkout";
 import Thanks from "./components/Thanks";
 import ipConfig from "./ipConfig.json"
 export const config = {
-  endpoint: `https://qkartfrontend365.herokuapp.com/api/V1`,
+  endpoint: `https://qkart-frontend-backends.onrender.com/api/V1`,
 };
 
 function App() {

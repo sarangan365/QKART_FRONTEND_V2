@@ -1,6 +1,8 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {
   Button,
+  Grid,
+  Stack,
   Typography
 } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -10,9 +12,10 @@ import "./Header.css";
 
 const Header = ({ children, hasHiddenAuthButtons }) => {
   const history = useHistory();
-
+// by clearing the local storage then no token and user name will be found then u should go to reg or login
   const handleLogOut = () => {
     localStorage.clear();
+    //upon reloading page will be refresh to show login or register
     window.location.reload();
   };
 
@@ -23,6 +26,9 @@ const Header = ({ children, hasHiddenAuthButtons }) => {
       </Box>
       {children}
       <Box>
+        {/* If this hasHiddenAuthButton is true value by props passed corresponding to the page 
+        if true(set backtoexplore button
+        else if(localstorage has token  and username) dothis ===>(display logout with profile pic)else ===>(display login and register in product page) */}
         {hasHiddenAuthButtons ? (
           <Button
             className="explore-button"
@@ -61,17 +67,22 @@ const Header = ({ children, hasHiddenAuthButtons }) => {
                 </Button>
               </Box>
             ) : (
-              <Box>
-                <Button variant="text" onClick={() => history.push("/login")}>
-                  LOGIN
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={() => history.push("/register")}
-                >
-                  REGISTER
-                </Button>
-              </Box>
+              <Grid item>
+                    <Stack direction="row" spacing={1}>
+                      <Button
+                        variant="text"
+                        onClick={() => history.push("/login")}
+                      >
+                        LOGIN
+                      </Button>
+                      <Button
+                        variant="contained"
+                        onClick={() => history.push("/register")}
+                      >
+                        REGISTER
+                      </Button>
+                    </Stack>
+                  </Grid>
             )}
           </Box>
         )}

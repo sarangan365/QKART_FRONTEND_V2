@@ -45,16 +45,20 @@ const Login = () => {
    */
   const login = async (formData) => {
     if (validateInput(formData)) {
+      // this is set  Circular Progress to be true if it is true it will be loading
       setAPIStatus(true);
       axios
         .post(`${config.endpoint}/auth/login`, formData)
         .then((res) => {
+          // for setting this to false which disable the circular progress 
           setAPIStatus(false);
           if (res.status === 201) {
             // Displaying a success banner with text, “Logged in successfully” if login is successful (201 status code)
             enqueueSnackbar("Logged in successfully", {
+              // variant is used to set the success message
               variant: "success",
             });
+            // this to to pass the value from here to persist login function
             persistLogin(res.data.token, formData.username, res.data.balance);
             history.push("/");
           }
@@ -132,8 +136,10 @@ const Login = () => {
     localStorage.setItem("username", username);
     localStorage.setItem("balance", balance);
   };
+// handle is a function what i did in Book appointment.js Takehome this is used to get the value from login from and store them in formdata
 
   const handleChange = (event) => {
+    // to make a shallow cpy i used ...formData because Formdata is already at useState
     if (event.target.name === "username") {
       setFormData({ ...formData, username: event.target.value });
     } else if (event.target.name === "password") {
@@ -148,6 +154,7 @@ const Login = () => {
       justifyContent="space-between"
       minHeight="100vh"
     >
+      {/* Whyy i have given here true because wee neeed to display BacktoExplore always here  */}
       <Header hasHiddenAuthButtons={true} />
       <Box className="content">
         <Stack spacing={2} className="form">
